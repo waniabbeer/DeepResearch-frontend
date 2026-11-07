@@ -97,7 +97,9 @@ const ModelComparison = () => {
   const availableModels = [
     { id: 'anthropic', name: 'Claude 4', description: 'Latest Anthropic Claude 4' },
     { id: 'openai', name: 'GPT-5', description: 'OpenAI\'s newest flagship model' },
-    { id: 'kimi', name: 'Kimi K2 0905 Preview', description: 'Kimi K2 0905 via Moonshot' }
+    { id: 'kimi', name: 'Kimi K2 0905 Preview', description: 'Kimi K2 0905 via Moonshot' },
+    { id: 'gemini', name: 'Gemini 2.5 Flash', description: 'Google Gemini API key from AI Studio' },
+    { id: 'openrouter', name: 'Nemotron 3 Ultra (Free)', description: 'nvidia/nemotron-3-ultra-550b-a55b:free on OpenRouter' }
   ]
 
   useEffect(() => {
@@ -128,7 +130,7 @@ const ModelComparison = () => {
     if (!query.trim() || selectedModels.length === 0) return
     
     // Check if all selected models have API keys
-    const missingKeys = selectedModels.filter(model => !apiKeys[model as keyof typeof apiKeys]?.trim())
+    const missingKeys = selectedModels.filter(model => model !== 'gemini' && model !== 'openrouter' && !apiKeys[model as keyof typeof apiKeys]?.trim())
     if (missingKeys.length > 0) {
       setError(`Missing API keys for: ${missingKeys.map(getModelName).join(', ')}. Please configure all keys first.`)
       return
@@ -256,7 +258,7 @@ const ModelComparison = () => {
     reader.onload = (e) => {
       try {
         const keys = JSON.parse(e.target?.result as string)
-        if (keys.openai !== undefined || keys.anthropic !== undefined || keys.kimi !== undefined) {
+        if (keys.openai !== undefined || keys.anthropic !== undefined || keys.kimi !== undefined || keys.gemini !== undefined || keys.openrouter !== undefined) {
           setApiKeys(keys)
           setError(null)
         } else {
@@ -432,7 +434,7 @@ const ModelComparison = () => {
             <button
               onClick={runComparison}
               className="px-4 py-2 bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-slate-200 text-white dark:text-slate-900 rounded-md disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
-              disabled={isRunning || !query.trim() || selectedModels.length === 0 || selectedModels.some(model => !apiKeys[model as keyof typeof apiKeys]?.trim())}
+              disabled={isRunning || !query.trim() || selectedModels.length === 0 || selectedModels.some(model => model !== 'gemini' && model !== 'openrouter' && !apiKeys[model as keyof typeof apiKeys]?.trim())}
             >
               {isRunning ? (
                 <>
@@ -447,7 +449,7 @@ const ModelComparison = () => {
               )}
             </button>
             
-            {selectedModels.some(model => !apiKeys[model as keyof typeof apiKeys]?.trim()) && (
+            {selectedModels.some(model => model !== 'gemini' && model !== 'openrouter' && !apiKeys[model as keyof typeof apiKeys]?.trim()) && (
               <p className="text-sm text-amber-600 dark:text-amber-400">
                 Missing API keys for selected models. Configure keys above.
               </p>

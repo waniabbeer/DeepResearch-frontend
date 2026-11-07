@@ -36,6 +36,8 @@ interface ApiKeys {
   openai: string
   anthropic: string
   kimi: string
+  gemini: string
+  openrouter: string
 }
 
 interface ResearchState {
@@ -84,13 +86,13 @@ export const ResearchProvider = ({ children }: { children: ReactNode }) => {
       try {
         const stored = localStorage.getItem('dra_api_keys')
         if (stored) {
-          return JSON.parse(stored)
+          return { openai: '', anthropic: '', kimi: '', gemini: '', openrouter: '', ...JSON.parse(stored) }
         }
       } catch (error) {
         console.warn('Failed to load API keys from localStorage:', error)
       }
     }
-    return { openai: '', anthropic: '', kimi: '' }
+    return { openai: '', anthropic: '', kimi: '', gemini: '', openrouter: '' }
   })
 
   // API key management functions
@@ -114,7 +116,7 @@ export const ResearchProvider = ({ children }: { children: ReactNode }) => {
   }
   
   const clearApiKeys = () => {
-    const emptyKeys = { openai: '', anthropic: '', kimi: '' }
+    const emptyKeys = { openai: '', anthropic: '', kimi: '', gemini: '', openrouter: '' }
     setApiKeysState(emptyKeys)
     setApiKey('')
     
